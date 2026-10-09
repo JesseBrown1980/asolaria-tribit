@@ -1,0 +1,39 @@
+name: tribit gate
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust 1.81 with clippy and rustfmt
+        run: rustup toolchain install 1.81 --profile minimal --component clippy,rustfmt
+
+      - name: fmt must be clean
+        run: cargo +1.81 fmt --all -- --check
+
+      - name: clippy with warnings denied
+        run: cargo +1.81 clippy --all-targets -- -D warnings
+
+      - name: tests must run and pass
+        run: |
+          out=$(cargo +1.81 test --all 2>&1); echo "$out"
+          echo "$out" | grep -qE 'test result: ok\.' || { echo "GATE|result=NOT_MEASURED|reason=no test actually ran"; exit 1; }
+          n=$(echo "$out" | grep -oE 'ok\. [0-9]+ passed' | grep -oE '[0-9]+' | head -1)
+          [ "${n:-0}" -ge 8 ] || { echo "GATE|result=RED|reason=only ${n:-0} tests ran"; exit 1; }
+          echo "GATE|tests_passed=$n"
+
+      - name: no float on this path
+        run: |
+          # f32/f64 must not appear in the crate source. Integer only is the law, so measure it.
+          if grep -nE '\bf32\b|\bf64\b' src/lib.rs; then
+            echo "GATE|result=RED|reason=float found on the integer-only path"; exit 1
+          fi
+          echo "GATE|float_used=0"
+
+      - name: receipt
+        run: echo "GATE|result=GREEN|every check ran and passed|json=0"
