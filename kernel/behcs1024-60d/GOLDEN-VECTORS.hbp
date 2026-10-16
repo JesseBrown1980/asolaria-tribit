@@ -1,0 +1,8 @@
+HBP1|schema=ASOLARIA-CLEAN-BEHCS1024-60D-PYTHON-GOLDEN-V1|algorithm=HASHLIB-SHA256|json=0
+VECTOR|name=empty|bytes=0|glyphs=60|first8=831.408.169.987.87.301.61.840|host8=a93505a95d0aace1|counter_alias=0|json=0
+VECTOR|name=abc|bytes=3|glyphs=60|first8=813.428.103.701.206.505.788.597|host8=ff504d90899902cd|counter_alias=0|json=0
+VECTOR|name=demo|bytes=4|glyphs=60|first8=660.554.864.544.519.408.307.253|host8=2834d01cd22e962e|counter_alias=0|json=0
+VECTOR|name=boundary508|bytes=508|glyphs=60|first8=760.475.404.897.943.763.994.891|host8=ccf39512e5da6fdc|counter_alias=0|json=0
+VECTOR|name=boundary509|bytes=509|glyphs=60|first8=481.827.862.35.658.245.339.1014|host8=7c092ab69457d613|counter_alias=1|json=0
+VECTOR|name=boundary512|bytes=512|glyphs=60|first8=913.534.916.925.298.717.311.170|host8=7f519cdfbabf95bc|counter_alias=1|json=0
+VERDICT|independent_python=PASS|counter_len_gt_508=UNSAFE|input_identity=NOT_REVERSIBLE|json=0

@@ -1,0 +1,9 @@
+[package]
+name = "asolaria-behcs1024-60d-clean"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.81"
+license = "MIT OR Apache-2.0"
+description = "Source-faithful 60D 1024-glyph hash coordinate with fail-closed boundary"
+
+[dependencies]

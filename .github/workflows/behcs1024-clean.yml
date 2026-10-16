@@ -1,0 +1,49 @@
+name: BEHCS1024 clean 60D source and boundary test
+on:
+  push:
+    paths: ['kernel/behcs1024-60d/**', '.github/workflows/behcs1024-clean.yml']
+  pull_request:
+    paths: ['kernel/behcs1024-60d/**', '.github/workflows/behcs1024-clean.yml']
+permissions:
+  contents: read
+jobs:
+  clean-math:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Fetch exact ref using git, no Node checkout action
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init .
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git fetch --depth 1 origin "${GITHUB_REF}"
+          git checkout --detach FETCH_HEAD
+      - name: Install Rust 1.81 with Clippy and rustfmt
+        run: rustup toolchain install 1.81 --profile minimal --component clippy,rustfmt
+      - name: Source formatting
+        working-directory: kernel/behcs1024-60d
+        run: cargo +1.81 fmt --all -- --check
+      - name: Clippy zero warnings
+        working-directory: kernel/behcs1024-60d
+        run: cargo +1.81 clippy --all-targets -- -D warnings
+      - name: Nine Rust tests including counter alias falsifier
+        working-directory: kernel/behcs1024-60d
+        run: cargo +1.81 test --all
+      - name: Independent hashlib vectors
+        run: python3 kernel/behcs1024-60d/tools/independent_vectors.py
+      - name: Privacy and credential scan
+        run: python3 kernel/behcs1024-60d/tools/privacy_scan.py
+      - name: Verify SHA256 sidecars
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' f; do
+            ( cd "$(dirname "$f")" && sha256sum --check "$(basename "$f")" )
+          done < <(find kernel/behcs1024-60d -name '*.sha256' -print0 | sort -z)
+      - name: Integer only and zero external crate dependencies
+        working-directory: kernel/behcs1024-60d
+        shell: bash
+        run: |
+          if grep -nE '\bf32\b|\bf64\b' src/lib.rs; then exit 1; fi
+          echo 'BEHCS1024|float=0|node=0|json=0|checked_len_gt508=REJECT'
