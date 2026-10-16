@@ -124,7 +124,9 @@ pub fn project_60d_legacy(tuple: &[u8]) -> [u16; 60] {
 
 /// Original output semantics, including the boundary bug when input >508 bytes.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum ProjectionError { CounterNotFullyHashed }
+pub enum ProjectionError {
+    CounterNotFullyHashed,
+}
 
 /// Rejects tuples whose 4-byte salt would be dropped, partially or wholly.
 pub fn project_60d_checked(input: &[u8]) -> Result<[u16; 60], ProjectionError> {
@@ -152,7 +154,9 @@ pub fn host8_from_coordinate(coord: &[u16; 60]) -> [u8; 8] {
 /// 0..1023 -> seven balanced trits. This view is bijective for the 1024 glyphs.
 /// Native SHA-256 remains a binary hash, not a ternary cryptographic primitive.
 pub fn glyph_to_trits(glyph: u16) -> Option<[i8; 7]> {
-    if glyph >= ALPHABET { return None; }
+    if glyph >= ALPHABET {
+        return None;
+    }
     let mut n = usize::from(glyph);
     let mut trits = [0i8; 7];
     for t in trits.iter_mut().rev() {
@@ -164,7 +168,9 @@ pub fn glyph_to_trits(glyph: u16) -> Option<[i8; 7]> {
 pub fn trits_to_glyph(trits: &[i8; 7]) -> Option<u16> {
     let mut val = 0usize;
     for &t in trits {
-        if !(-1..=1).contains(&t) { return None; }
+        if !(-1..=1).contains(&t) {
+            return None;
+        }
         val = val * 3 + usize::try_from(t + 1).ok()?;
     }
     u16::try_from(val).ok().filter(|g| *g < ALPHABET)
@@ -174,33 +180,42 @@ mod tests {
     use super::*;
     #[test]
     fn sha256_fips_known_vectors() {
-        assert_eq!(&sha256_legacy(b"")[..4], &[0xe3,0xb0,0xc4,0x42]);
-        assert_eq!(&sha256_legacy(b"abc")[..4], &[0xba,0x78,0x16,0xbf]);
+        assert_eq!(&sha256_legacy(b"")[..4], &[0xe3, 0xb0, 0xc4, 0x42]);
+        assert_eq!(&sha256_legacy(b"abc")[..4], &[0xba, 0x78, 0x16, 0xbf]);
     }
     #[test]
     fn source_60d_golden_abc() {
         let c = project_60d_checked(b"abc").unwrap();
-        assert_eq!(&c[..8], &[813,428,103,701,206,505,788,597]);
-        assert_eq!(host8_from_coordinate(&c), [0xff,0x50,0x4d,0x90,0x89,0x99,0x02,0xcd]);
+        assert_eq!(&c[..8], &[813, 428, 103, 701, 206, 505, 788, 597]);
+        assert_eq!(
+            host8_from_coordinate(&c),
+            [0xff, 0x50, 0x4d, 0x90, 0x89, 0x99, 0x02, 0xcd]
+        );
     }
     #[test]
     fn source_60d_golden_empty() {
         let c = project_60d_checked(b"").unwrap();
-        assert_eq!(&c[..8], &[831,408,169,987,87,301,61,840]);
-        assert_eq!(host8_from_coordinate(&c), [0xa9,0x35,0x05,0xa9,0x5d,0x0a,0xac,0xe1]);
+        assert_eq!(&c[..8], &[831, 408, 169, 987, 87, 301, 61, 840]);
+        assert_eq!(
+            host8_from_coordinate(&c),
+            [0xa9, 0x35, 0x05, 0xa9, 0x5d, 0x0a, 0xac, 0xe1]
+        );
     }
     #[test]
     fn legacy_and_checked_agree_on_safe_domain() {
         for n in [0usize, 3, 17, 128, 508] {
             let input = [0x42u8; 508];
-            assert_eq!(project_60d_checked(&input[..n]).unwrap(), project_60d_legacy(&input[..n]));
+            assert_eq!(
+                project_60d_checked(&input[..n]).unwrap(),
+                project_60d_legacy(&input[..n])
+            );
         }
     }
     #[test]
     fn boundary_508_preserves_counter_domain_separation() {
         let c = project_60d_checked(&[0x42u8; 508]).unwrap();
         assert_ne!(&c[..16], &c[16..32]);
-        assert_eq!(&c[..8], &[760,475,404,897,943,763,994,891]);
+        assert_eq!(&c[..8], &[760, 475, 404, 897, 943, 763, 994, 891]);
     }
     #[test]
     fn boundary_509_to_512_repeats_counter_blocks_and_checked_rejects() {
@@ -209,14 +224,20 @@ mod tests {
             let legacy = project_60d_legacy(&input[..n]);
             assert_eq!(&legacy[..16], &legacy[16..32]);
             assert_eq!(&legacy[16..32], &legacy[32..48]);
-            assert_eq!(project_60d_checked(&input[..n]), Err(ProjectionError::CounterNotFullyHashed));
+            assert_eq!(
+                project_60d_checked(&input[..n]),
+                Err(ProjectionError::CounterNotFullyHashed)
+            );
         }
     }
     #[test]
     fn boundary_512_source_vector_and_host8() {
         let c = project_60d_legacy(&[0x42u8; 512]);
-        assert_eq!(&c[..8], &[913,534,916,925,298,717,311,170]);
-        assert_eq!(host8_from_coordinate(&c), [0x7f,0x51,0x9c,0xdf,0xba,0xbf,0x95,0xbc]);
+        assert_eq!(&c[..8], &[913, 534, 916, 925, 298, 717, 311, 170]);
+        assert_eq!(
+            host8_from_coordinate(&c),
+            [0x7f, 0x51, 0x9c, 0xdf, 0xba, 0xbf, 0x95, 0xbc]
+        );
     }
     #[test]
     fn ternary_1024_glyph_roundtrip_exhaustive() {
@@ -226,8 +247,8 @@ mod tests {
             assert_eq!(trits_to_glyph(&trits), Some(glyph));
         }
         assert!(glyph_to_trits(ALPHABET).is_none());
-        assert!(trits_to_glyph(&[1;7]).is_none());
-        assert!(trits_to_glyph(&[-2;7]).is_none());
+        assert!(trits_to_glyph(&[1; 7]).is_none());
+        assert!(trits_to_glyph(&[-2; 7]).is_none());
     }
     #[test]
     fn no_more_than_1023_per_glyph() {
