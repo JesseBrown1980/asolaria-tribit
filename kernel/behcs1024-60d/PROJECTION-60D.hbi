@@ -1,0 +1,7 @@
+HBI1|schema=ASOLARIA-BEHCS1024-CLEAN-PROJECTION-60D-V1|json=0
+SOURCE|repo=JesseBrown1980/asolaria-federation-1024|revision=dc1da1a9cd88b77eb463053312b7c42a7dbe9b33|file=kernel/boot/src/hwinv.rs|git_blob=d08bc2a9ba6f3b63fec5249f0670d68c8df744d4|json=0
+MATH|type=SHA256_COUNTER_SALTED_60D|tuple_cap=512|salt=U32_BIG_ENDIAN|glyphs=60|alphabet=1024|short_handle_bits=64|json=0
+LEGACY|counter_salt_verified_for_length=0..508|counter_lost_or_truncated=509..512|repeated_blocks=YES|json=0
+CHECKED|length_0..508=ALLOW|length_gt_508=REJECT|upstream_modified=NO|json=0
+TERNARY|glyph_0..1023=7_balanced_trits|trit_values=-1,0,+1|roundtrip=LOSSLESS|SHA256_IS_BINARY=YES|json=0
+BOUNDARY|hash_coordinates_not_physical_3D|DH_NOT_IMPLEMENTED=YES|no_personal_operational_data=YES|json=0

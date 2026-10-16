@@ -1,0 +1,7 @@
+HBP1|schema=ASOLARIA-BEHCS1024-60D-CLEAN-EXTRACTION-EVIDENCE-V1|json=0
+UPSTREAM|repo=JesseBrown1980/asolaria-federation-1024|commit=dc1da1a9cd88b77eb463053312b7c42a7dbe9b33|file=kernel/boot/src/hwinv.rs|blob_sha1=d08bc2a9ba6f3b63fec5249f0670d68c8df744d4|json=0
+EXTRACTION|sha256=ORIGINAL_FIXED_BUFFER|project_60d=ORIGINAL_ALGORITHM|host8=SHA256_BE_120_BYTE_COORD_PREFIX8|json=0
+COUNTEREXAMPLE|length=509|block0_equals_block1_equals_block2_equals_block3|cause=SHA_MAX_512|json=0
+COUNTEREXAMPLE|length=512|counter_bytes_hashed=0|block_repetition=TRUE|json=0
+SAFETY|project_60d_checked_REJECT_GT_508|legacy_unchanged=YES|future_algorithm_version_must_change=YES|json=0
+STATUS|hashlib_vectors=INCLUDED|Rust_CI=PENDING|privacy_CI=PENDING|new_physical_measurement=NO|json=0
