@@ -197,13 +197,13 @@ mod tests {
         }
     }
     #[test]
-    fn 508_preserves_counter_domain_separation() {
+    fn boundary_508_preserves_counter_domain_separation() {
         let c = project_60d_checked(&[0x42u8; 508]).unwrap();
         assert_ne!(&c[..16], &c[16..32]);
         assert_eq!(&c[..8], &[760,475,404,897,943,763,994,891]);
     }
     #[test]
-    fn 509_to_512_repeats_counter_blocks_and_checked_rejects() {
+    fn boundary_509_to_512_repeats_counter_blocks_and_checked_rejects() {
         let input = [0x42u8; 512];
         for n in 509..=512 {
             let legacy = project_60d_legacy(&input[..n]);
@@ -213,7 +213,7 @@ mod tests {
         }
     }
     #[test]
-    fn 512_source_vector_and_host8() {
+    fn boundary_512_source_vector_and_host8() {
         let c = project_60d_legacy(&[0x42u8; 512]);
         assert_eq!(&c[..8], &[913,534,916,925,298,717,311,170]);
         assert_eq!(host8_from_coordinate(&c), [0x7f,0x51,0x9c,0xdf,0xba,0xbf,0x95,0xbc]);
